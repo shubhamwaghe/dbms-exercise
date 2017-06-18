@@ -1,0 +1,57 @@
+CREATE TABLE departments (dept_id int PRIMARY KEY,  dept_name VARCHAR(30) NOT NULL,  dept_type ENUM("Department", "Center", "School") NOT NULL default "Department", CONSTRAINT chk_dept_type CHECK (dept_type IN('Department', 'Center', 'School')));
+
+CREATE TABLE courses (course_id int PRIMARY KEY,  course_name text NOT NULL,  credit int NOT NULL, course_type ENUM('Theory', 'Lab', 'Project'), offered_by_dept VARCHAR(30) NOT NULL,  CONSTRAINT chk_course_type CHECK(course_type IN('Theory', 'Lab', 'Project')), CONSTRAINT chk_credit CHECK(credit BETWEEN 0 AND 15), FOREIGN KEY (offered_by_dept) REFERENCES departments(dept_name));
+
+
+CREATE TABLE students(rollno VARCHAR(10) PRIMARY KEY, student_name text NOT NULL, dept_id int NOT NULL, degree ENUM('BTech', 'Msc', 'MTech') NOT NULL, FOREIGN KEY (dept_id) REFERENCES departments(dept_id));
+
+CREATE TABLE performance (rollno VARCHAR(10), course_id int, marks int, CONSTRAINT chk_marks CHECK (marks BETWEEN 0 AND 100), FOREIGN KEY (rollno) REFERENCES students(rollno), FOREIGN KEY (course_id) REFERENCES courses(course_id));
+
+
+INSERT INTO  `Institute`.`departments` (`dept_id` , `dept_name` , `dept_type`) VALUES ('1',  'CSE',  'Department');
+INSERT INTO  `Institute`.`departments` (`dept_id` , `dept_name` , `dept_type`) VALUES ('2',  'ECE',  'Department');
+INSERT INTO  `Institute`.`departments` (`dept_id` , `dept_name` , `dept_type`) VALUES ('3',  'ME',  'Department');
+INSERT INTO  `Institute`.`departments` (`dept_id` , `dept_name` , `dept_type`) VALUES ('4',  'EE',  'Department');
+INSERT INTO  `Institute`.`departments` (`dept_id` , `dept_name` , `dept_type`) VALUES ('5',  'MA',  'Department');
+
+
+INSERT INTO  `Institute`.`courses` (`course_id` , `course_name` , `credit`, `course_type`, `offered_by_dept`) VALUES ('1',  'File Organization and Database Structures',  '3', 'Theory', '5');
+INSERT INTO  `Institute`.`courses` (`course_id` , `course_name` , `credit`, `course_type`, `offered_by_dept`) VALUES ('2',  'Computer Networks',  '3', 'Theory', '5');
+INSERT INTO  `Institute`.`courses` (`course_id` , `course_name` , `credit`, `course_type`, `offered_by_dept`) VALUES ('3',  'Algorithms I',  '3', 'Theory', '1');
+INSERT INTO  `Institute`.`courses` (`course_id` , `course_name` , `credit`, `course_type`, `offered_by_dept`) VALUES ('4',  'Fluid Mechanics',  '3', 'Theory', '3');
+INSERT INTO  `Institute`.`courses` (`course_id` , `course_name` , `credit`, `course_type`, `offered_by_dept`) VALUES ('5',  'Image Processing',  '3', 'Theory', '2');
+
+
+INSERT INTO  `Institute`.`students` (`rollno` , `student_name` , `dept_id`, `degree`) VALUES ('13MF3IM17',  'Shubham Waghe',  '3', 'BTech');
+INSERT INTO  `Institute`.`students` (`rollno` , `student_name` , `dept_id`, `degree`) VALUES ('13MA20027',  'Sai Dheeraj',  '5', 'MSc');
+INSERT INTO  `Institute`.`students` (`rollno` , `student_name` , `dept_id`, `degree`) VALUES ('13MA20023',  'Mudit',  '5', 'MSc');
+INSERT INTO  `Institute`.`students` (`rollno` , `student_name` , `dept_id`, `degree`) VALUES ('13ME10000',  'Anirudh',  '3', 'BTech');
+INSERT INTO  `Institute`.`students` (`rollno` , `student_name` , `dept_id`, `degree`) VALUES ('13CSDP10',  'Someone',  '4', 'MTech');
+
+
+INSERT INTO  `Institute`.`performance` (`rollno` , `course_id` , `marks`) VALUES ('13MA20027',  '3',  '90');
+INSERT INTO  `Institute`.`performance` (`rollno` , `course_id` , `marks`) VALUES ('13MA10023',  '4',  '80');
+INSERT INTO  `Institute`.`performance` (`rollno` , `course_id` , `marks`) VALUES ('13ME10000',  '3',  '85');
+INSERT INTO  `Institute`.`performance` (`rollno` , `course_id` , `marks`) VALUES ('13MF3IM17',  '2',  '95');
+INSERT INTO  `Institute`.`performance` (`rollno` , `course_id` , `marks`) VALUES ('13CSDP10',  '3',  '78');
+
+
+
+Question 4:
+
+SELECT DISTINCT(student_name) FROM students S, performance P, departments D, courses C WHERE S.dept_id = D.dept_id AND D.dept_name = 'MA' AND S.rollno = P.rollno AND P.course_id = C.course_id AND C.offered_by_dept = (SELECT dept_id WHERE dept_name = 'CSE');
+
+SELECT C.course_name FROM courses C, students S, performance P WHERE S.rollno = P.rollno AND P.course_id = C.course_id AND P.marks > 80 AND S.degree = 'MTech';
+
+
+SELECT C.course_name, MAX(P.marks) FROM performance P, courses C WHERE P.course_id = C.course_id GROUP BY C.offered_by_dept, C.course_id;
+
+SELECT S.student_name, AVG(P.marks) AS average FROM performance P, students S WHERE P.rollno = S.rollno AND S.degree = 'MSc' GROUP BY S.student_name HAVING average > 90;
+
+
+
+
+
+
+
+
